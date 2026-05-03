@@ -51,8 +51,7 @@ export async function sendMailIfConfigured(payload: MailPayload) {
   
   if (resendApiKey) {
     try {
-      const smtp = resolveSmtpConfig();
-      const fromEmail = smtp.from || "onboarding@resend.dev"; // Resend testing domain
+      const fromEmail = "onboarding@resend.dev"; // Resend testing domain
       
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
