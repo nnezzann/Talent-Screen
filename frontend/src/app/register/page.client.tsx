@@ -324,14 +324,14 @@ export default function RegisterPage() {
         setPendingSignupToken(signupResponse.signupToken?.trim() ?? "");
 
         if (signupResponse.devOtpToken) {
-          await handleVerification(signupResponse.devOtpToken);
-          return;
+          toast("Development mode code: " + signupResponse.devOtpToken, { duration: 10000 });
+        } else {
+          toast.success(
+            "Account created. Enter the verification code sent to your email to finish setup.",
+          );
         }
 
         setAwaitingVerification(true);
-        toast.success(
-          "Account created. Enter the verification code to finish setup.",
-        );
         return;
       }
 
@@ -352,18 +352,6 @@ export default function RegisterPage() {
         title="Confirm your account"
         subtitle={`Enter the verification code sent to ${pendingEmail || "your email address"}.`}
         showTopBrand={false}
-        footer={
-          <button
-            type="button"
-            className="font-semibold text-accent hover:text-accent-hover"
-            onClick={() => {
-              setAwaitingVerification(false);
-              setVerificationCode("");
-            }}
-          >
-            Use different registration details
-          </button>
-        }
       >
         <form
           onSubmit={(event) => {
@@ -391,9 +379,22 @@ export default function RegisterPage() {
             />
           </div>
 
-          <Button type="submit" className="h-11 w-full" disabled={busy}>
-            {busy ? "Confirming..." : "Confirm account"}
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button type="submit" className="h-11 w-full" disabled={busy}>
+              {busy ? "Confirming..." : "Confirm account"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full"
+              onClick={() => {
+                setAwaitingVerification(false);
+                setVerificationCode("");
+              }}
+            >
+              Use different registration details
+            </Button>
+          </div>
         </form>
       </AuthShell>
     );
