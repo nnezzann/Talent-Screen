@@ -1,48 +1,78 @@
 import type { Request, Response } from "express";
 import Applicant from "../models/Applicant.js";
-import nodemailer from "nodemailer";
-import env from "../config/env.js";
+import { sendMailIfConfigured } from "../lib/mailer.js";
+import { buildShortlistedApplicantEmail, buildRejectedApplicantEmail } from "../lib/emailTemplates.js";
+
 interface Short_AppL {    
   first_name: string;
   last_name: string;
   email: string;
 }
+
 const completeApplication = async (req: Request, res: Response) => {
-  const { selected_applicants_str }: { selected_applicants_str: string } =
-    req.body;
-  let selected_applicants: Short_AppL[] = JSON.parse(selected_applicants_str);
-  if (!env.USER_EMAIL || !env.USER_PASS) {
-    throw new Error("Could not load environment variables");
-  }
-  for (const selected_applicant of selected_applicants) {
-    let first_name = selected_applicant.first_name;
-    let last_name = selected_applicant.last_name;
-    let email = selected_applicant.email;
-    const applicant = await Applicant.findOne({
-      first_name,
-      last_name,
-      email,
-    });
-    if (!applicant) {
-      return res.status(404).json({ data_error: "Applicant not registe" });
+  try {
+    const { selected_applicants_str }: { selected_applicants_str: string } = req.body;
+    let selected_applicants: Short_AppL[] = JSON.parse(selected_applicants_str);
+
+    for (const selected_applicant of selected_applicants) {
+      let first_name = selected_applicant.first_name;
+      let last_name = selected_applicant.last_name;
+      let email = selected_applicant.email;
+      const applicant = await Applicant.findOne({
+        first_name,
+        last_name,
+        email,
+      });
+
+      if (!applicant) {
+        return res.status(404).json({ data_error: "Applicant not registered" });
+      }
+
+      applicant.applicant_state = "Shortlisted";
+      await applicant.save();
+
+      const emailPayload = buildShortlistedApplicantEmail({
+        applicantName: `${applicant.first_name} ${applicant.last_name}`,
+        jobTitle: applicant.job_title || "the role",
+      });
+
+      await sendMailIfConfigured({
+        to: email,
+        subject: emailPayload.subject,
+        text: emailPayload.text,
+        html: emailPayload.html,
+      });
     }
-    applicant.applicant_state = "Shortlisted";
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: env.USER_EMAIL,
-        pass: env.USER_PASS,
-      },
+
+    const rejected_applicants = await Applicant.find({
+      applicant_state: "Rejected",
     });
-    transporter.sendMail({
-        
-    })
-    await applicant.save();
+
+    for (const applicant of rejected_applicants) {
+      if (applicant.email) {
+        const emailPayload = buildRejectedApplicantEmail({
+          applicantName: `${applicant.first_name} ${applicant.last_name}`,
+          jobTitle: applicant.job_title || "the role",
+        });
+
+        await sendMailIfConfigured({
+          to: applicant.email,
+          subject: emailPayload.subject,
+          text: emailPayload.text,
+          html: emailPayload.html,
+        });
+      }
+    }
+
+    await Applicant.deleteMany({
+      applicant_state: "Rejected",
+    });
+
+    return res.status(200).json({ success: "Applications completed successfully" });
+  } catch (error) {
+    console.error("Error in completeApplication:", error);
+    return res.status(500).json({ server_error: "Internal server error" });
   }
-  const rejected_applicants = await Applicant.deleteMany({
-    applicant_state: "Rejected",
-  });
 };
+
 export default completeApplication;
