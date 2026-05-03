@@ -29,7 +29,7 @@ const env = {
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_FROM: process.env.SMTP_FROM,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
     AUTO_SEED: process.env.AUTO_SEED === "true",
     VERTEX_PROJECT_ID: process.env.VERTEX_PROJECT_ID,
     VERTEX_LOCATION: process.env.VERTEX_LOCATION,

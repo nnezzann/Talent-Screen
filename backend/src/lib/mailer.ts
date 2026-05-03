@@ -35,7 +35,7 @@ function resolveSmtpConfig() {
 }
 
 export function emailDeliveryConfigured() {
-  if (trimText(env.RESEND_API_KEY)) {
+  if (trimText(env.BREVO_API_KEY)) {
     return true;
   }
   const smtp = resolveSmtpConfig();
@@ -47,35 +47,45 @@ export async function sendMailIfConfigured(payload: MailPayload) {
     return false;
   }
 
-  const resendApiKey = trimText(env.RESEND_API_KEY);
+  const brevoApiKey = trimText(env.BREVO_API_KEY);
   
-  if (resendApiKey) {
+  if (brevoApiKey) {
     try {
-      const fromEmail = "onboarding@resend.dev"; // Resend testing domain
+      const smtp = resolveSmtpConfig();
+      const fromEmail = smtp.from || "noreply@talvo.com";
+      const fromName = "Talvo";
       
-      const response = await fetch("https://api.resend.com/emails", {
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${resendApiKey}`,
-          "Content-Type": "application/json",
+          "accept": "application/json",
+          "api-key": brevoApiKey,
+          "content-type": "application/json",
         },
         body: JSON.stringify({
-          from: fromEmail.includes("<") ? fromEmail : `Talvo <${fromEmail}>`,
-          to: [payload.to],
+          sender: {
+            name: fromName,
+            email: fromEmail.replace(/.*<(.+)>.*/, "$1").trim() // extract just the email if formatted like "Name <email>"
+          },
+          to: [
+            {
+              email: payload.to
+            }
+          ],
           subject: payload.subject,
-          text: payload.text,
-          ...(payload.html ? { html: payload.html } : {}),
+          textContent: payload.text,
+          ...(payload.html ? { htmlContent: payload.html } : {}),
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Resend API error: ${response.status} ${errorText}`);
+        throw new Error(`Brevo API error: ${response.status} ${errorText}`);
       }
 
       return true;
     } catch (error) {
-      console.error("Resend API delivery skipped:", error);
+      console.error("Brevo API delivery skipped:", error);
       return false;
     }
   }
