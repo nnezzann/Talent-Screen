@@ -17,8 +17,7 @@ const env = {
     process.env.API_URL ||
     process.env.BACKEND_URL ||
     process.env.RENDER_EXTERNAL_URL,
-  GOOGLE_CLIENT_ID:
-    process.env.GOOGLE_CLIENT_ID || process.env.CLIENT_ID,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || process.env.CLIENT_ID,
   GOOGLE_CLIENT_SECRET:
     process.env.GOOGLE_CLIENT_SECRET || process.env.CLIENT_SECRET,
   GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
@@ -26,17 +25,11 @@ const env = {
   CLOUDINARY_API_NAME: process.env.CLOUDINARY_API_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  USER_EMAIL: process.env.USER_EMAIL,
-  USER_PASS: process.env.USER_PASS,
-  SMTP_HOST: process.env.SMTP_HOST,
-  SMTP_PORT: process.env.SMTP_PORT,
-  SMTP_SECURE: process.env.SMTP_SECURE,
-  SMTP_USER: process.env.SMTP_USER,
-  SMTP_PASS: process.env.SMTP_PASS,
-  SMTP_FROM: process.env.SMTP_FROM,
   BREVO_API_KEY: process.env.BREVO_API_KEY,
   AUTO_SEED: process.env.AUTO_SEED === "true",
   VERTEX_PROJECT_ID: process.env.VERTEX_PROJECT_ID,
   VERTEX_LOCATION: process.env.VERTEX_LOCATION,
+  FROM_EMAIL: process.env.FROM_EMAIL,
+  FROM_NAME:process.env.FROM_NAME
 };
 export default env;
