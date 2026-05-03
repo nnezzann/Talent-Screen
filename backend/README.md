@@ -333,13 +333,7 @@ Configured in [src/config/env.ts](/home/nezn/Debug/Talent-Screen/backend/src/con
 | `CLOUDINARY_API_NAME` | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Cloudinary key |
 | `CLOUDINARY_API_SECRET` | Cloudinary secret |
-| `USER_EMAIL` / `USER_PASS` | Legacy SMTP sender config |
-| `SMTP_HOST` | SMTP host |
-| `SMTP_PORT` | SMTP port |
-| `SMTP_SECURE` | SMTP TLS flag |
-| `SMTP_USER` | SMTP username |
-| `SMTP_PASS` | SMTP password |
-| `SMTP_FROM` | SMTP from address |
+| `BREVO_API_KEY` | Brevo API key for secure outbound emailing |
 | `AUTO_SEED` | Seed demo data on startup when `true` |
 
 ## Local run

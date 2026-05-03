@@ -24,6 +24,4 @@ if (process.env.ANALYZE === "true") {
     enabled: true,
   });
   module.exports = withBundleAnalyzer(nextConfig);
-} else {
   module.exports = nextConfig;
-}

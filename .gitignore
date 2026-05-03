@@ -5,3 +5,5 @@
 /frontend/.next
 /frontend/next-env.d.ts
 /frontend/tsconfig.tsbuildinfo
+config.bat
+node_modules
